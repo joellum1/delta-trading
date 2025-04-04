@@ -8,6 +8,12 @@ The **Prosperity 3** competition challenges participants to develop an algorithm
 
 ---
 
+## 📄 Prosperity 3 Wiki
+
+[Prosperity 3 Wiki Page Link](https://imc-prosperity.notion.site/Prosperity-3-Wiki-19ee8453a09380529731c4e6fb697ea4) 
+
+---
+
 ## 🛠️ Project Structure
 
 TBC...
