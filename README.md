@@ -1,6 +1,6 @@
 # 🏦 IMC Trading - Prosperity 3 Competition 🧠📈
 
-Welcome to our repository for the **IMC Trading's Prosperity 3** competition, hosted on [Kaggle](https://www.kaggle.com/competitions/imc-prosperity-3). This repo contains our team's solution, trading strategies, and research conducted during the competition.
+Welcome to our repository for the **IMC Trading's Prosperity 3** competition. This repo contains our team's solution, trading strategies, and research conducted during the competition.
 
 ## 📌 Overview
 
