@@ -2,6 +2,13 @@ import os
 import subprocess
 import sys
 
+# Check for Python 3.12
+REQUIRED_VERSION = (3, 12)
+
+if sys.version_info < REQUIRED_VERSION:
+    print(f"❌ Python 3.12 or higher is required. You are using Python {sys.version.split()[0]}")
+    sys.exit(1)
+
 VENV_DIR = "venv"
 
 def create_virtual_env():
