@@ -20,6 +20,7 @@ This project uses a virtual environment to manage dependencies. Only the followi
 
 - [`pandas`](https://pandas.pydata.org/)
 - [`numpy`](https://numpy.org/)
+- [`jsonpickle`](https://pypi.org/project/jsonpickle/)
 - Built-in Python libraries: `math`, `statistics`, `typing`
 
 Run the following script to set up your virual environment.
