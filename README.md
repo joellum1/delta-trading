@@ -14,6 +14,48 @@ The **Prosperity 3** competition challenges participants to develop an algorithm
 
 ---
 
+## 📦 Getting Started
+
+This project uses a virtual environment to manage dependencies. Only the following libraries are supported and installed:
+
+- [`pandas`](https://pandas.pydata.org/)
+- [`numpy`](https://numpy.org/)
+- Built-in Python libraries: `math`, `statistics`, `typing`
+
+Run the following script to set up your virual environment.
+
+```bash
+python setup_env.py
+```
+
+Make sure to **activate the environment before running your bot** so that it uses only the allowed dependencies.
+
+### On **Mac/Linux**:
+
+```bash
+source venv/bin/activate
+```
+
+### On **Windows**:
+
+```bash
+venv\Scripts\activate
+```
+
+After activation, your terminal should show a prefix like:
+
+```bash
+(venv) $
+```
+
+To **deactivate**, simply run:
+
+```bash
+deactivate
+```
+
+---
+
 ## 🛠️ Project Structure
 
 TBC...
