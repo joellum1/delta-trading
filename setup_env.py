@@ -30,19 +30,11 @@ def print_activation_instructions():
     else:
         print("   source venv/bin/activate")
 
-def activate_virtual_env():
-    print("🔑 Activating virtual environment...")
-    if os.name == "nt":
-        subprocess.run([os.path.join(VENV_DIR, "Scripts", "activate.bat")], shell=True)
-    else:
-        subprocess.run(["source", os.path.join(VENV_DIR, "bin", "activate")], shell=True)
-
 def main():
     if not os.path.exists(VENV_DIR):
         create_virtual_env()
     else:
         print("✅ Virtual environment already exists.")
-        activate_virtual_env()  # Activating environment if it exists
     
     install_dependencies()
     print_activation_instructions()
