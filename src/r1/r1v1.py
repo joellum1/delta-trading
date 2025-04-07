@@ -6,6 +6,11 @@ from logger import Logger
 # Create logs for visualisation
 logger = Logger()
 
+class Item:
+    RAINFOREST_RESIN = 'RAINFOREST_RESIN'
+    KELP = 'KELP'
+    SQUID_INK = 'SQUID_INK'
+
 class Trader:
     
     def run(self, state: TradingState):
@@ -15,7 +20,7 @@ class Trader:
 		# Orders to be placed on exchange matching engine
         result = {}
         for product in state.order_depths:
-            if product == 'RAINFOREST_RESIN':
+            if product == Item.RAINFOREST_RESIN:
                 order_depth: OrderDepth = state.order_depths[product]
                 orders: List[Order] = []
 
@@ -38,7 +43,7 @@ class Trader:
                         orders.append(Order(product, best_bid, -best_bid_amount))
                 
                 result[product] = orders
-            elif product == 'KELP':
+            elif product == Item.KELP:
                 order_depth: OrderDepth = state.order_depths[product]
                 orders: List[Order] = []
 
@@ -61,7 +66,7 @@ class Trader:
                         orders.append(Order(product, best_bid, -best_bid_amount))
                 
                 result[product] = orders
-            elif product == 'SQUID_INK':
+            elif product == Item.SQUID_INK:
                 order_depth: OrderDepth = state.order_depths[product]
                 orders: List[Order] = []
 
