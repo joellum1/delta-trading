@@ -1,4 +1,4 @@
-from datamodel import Listing, Observation, OrderDepth, UserId, TradingState, Order, ProsperityEncoder, Symbol, Trade
+from src.tutorial.datamodel import Listing, Observation, OrderDepth, UserId, TradingState, Order, ProsperityEncoder, Symbol, Trade
 from typing import List, Any
 import string
 import json
