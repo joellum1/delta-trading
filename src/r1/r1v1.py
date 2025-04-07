@@ -12,6 +12,13 @@ class Item:
     SQUID_INK = 'SQUID_INK'
 
 class Trader:
+
+    def __init__(self):
+        self.LIMIT = {
+            'RAINFOREST_RESIN': 50,
+            'KELP': 50,
+            'SQUID_INK': 50
+        }
     
     def run(self, state: TradingState):
         print("traderData: " + state.traderData)
@@ -20,21 +27,35 @@ class Trader:
 		# Orders to be placed on exchange matching engine
         result = {}
 
-        for product in state.order_depths:
-            if product == Item.RAINFOREST_RESIN:
-                order_depth: OrderDepth = state.order_depths[Item.RAINFOREST_RESIN]
-                rainforest_resin_orders = self.rainforest_resin_orders()
-                result[Item.RAINFOREST_RESIN] = rainforest_resin_orders
+        if Item.RAINFOREST_RESIN in state.order_depths:
+            rainforest_resin_position = state.position[Item.RAINFOREST_RESIN] if Item.RAINFOREST_RESIN in state.position else 0
+            rainforest_resin_orders = self.rainforest_resin_orders(
+                state.order_depths[Item.RAINFOREST_RESIN],
+                state.position[Item.RAINFOREST_RESIN],
+                rainforest_resin_position
+            )
+            
+            result[Item.RAINFOREST_RESIN] = rainforest_resin_orders
 
-            elif product == Item.KELP:
-                order_depth: OrderDepth = state.order_depths[Item.KELP]
-                kelp_orders = self.kelp_orders()
-                result[Item.KELP] = kelp_orders
+        if Item.KELP in state.order_depths:
+            kelp_position = state.position[Item.KELP] if Item.KELP in state.position else 0
+            kelp_orders = self.kelp_orders(
+                state.order_depths[Item.KELP],
+                state.position[Item.KELP],
+                kelp_position
+            )
 
-            elif product == Item.SQUID_INK:
-                order_depth: OrderDepth = state.order_depths[Item.SQUID_INK]
-                squid_ink_orders = self.squid_ink_orders()
-                result[Item.SQUID_INK] = squid_ink_orders
+            result[Item.KELP] = kelp_orders
+
+        if Item.SQUID_INK in state.order_depths:
+            squid_ink_position = state.position[Item.SQUID_INK] if Item.SQUID_INK in state.position else 0
+            squid_ink_orders = self.squid_ink_orders(
+                state.order_depths[Item.SQUID_INK],
+                state.position[Item.SQUID_INK],
+                squid_ink_position
+            )
+
+            result[Item.SQUID_INK] = squid_ink_orders
     
 	    # String value holding Trader state data required. 
 		# It will be delivered as TradingState.traderData on next execution.
