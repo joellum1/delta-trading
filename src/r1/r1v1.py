@@ -2,6 +2,7 @@ from src.tutorial.datamodel import OrderDepth, UserId, TradingState, Order
 from typing import List
 import string
 from logger import Logger
+import jsonpickle
 
 # Create logs for visualisation
 logger = Logger()
@@ -26,6 +27,11 @@ class Trader:
         }
     
     def run(self, state: TradingState):
+        # Get data from previous iteration
+        trader_data = {}
+        if state.get(traderData) != None and state.traderData != "":
+            trader_data = jsonpickle.decode(state.traderData)
+
         print("traderData: " + state.traderData)
         print("Observations: " + str(state.observations))
 
@@ -62,13 +68,15 @@ class Trader:
 
             result[Item.SQUID_INK] = squid_ink_orders
     
-	    # String value holding Trader state data required. 
-		# It will be delivered as TradingState.traderData on next execution.
-        traderData = "SAMPLE" 
+        # Store trader data with new information
+        traderData = jsonpickle.encode(trader_data)
         
 		# Sample conversion request. Check more details below. 
         conversions = 1
+
+        # Log data for visualisation efforts
         logger.flush(state, result, conversions, traderData)
+
         return result, conversions, traderData
     
     def rainforest_resin_orders(self, order_depth: OrderDepth, position: int, position_limit: int):
@@ -83,9 +91,10 @@ class Trader:
 
         if len(order_depth.sell_orders) != 0:
             best_ask, best_ask_amount = list(order_depth.sell_orders.items())[0]
+            best_ask_amount = abs(best_ask_amount)  # Convert to positive value
             if int(best_ask) < acceptable_price:
-                print("BUY", str(-best_ask_amount) + "x", best_ask)
-                orders.append(Order(product, best_ask, -best_ask_amount))
+                print("BUY", str(best_ask_amount) + "x", best_ask)
+                orders.append(Order(product, best_ask, best_ask_amount))
 
         if len(order_depth.buy_orders) != 0:
             best_bid, best_bid_amount = list(order_depth.buy_orders.items())[0]
@@ -107,9 +116,10 @@ class Trader:
 
         if len(order_depth.sell_orders) != 0:
             best_ask, best_ask_amount = list(order_depth.sell_orders.items())[0]
+            best_ask_amount = abs(best_ask_amount)  # Convert to positive value
             if int(best_ask) < acceptable_price:
-                print("BUY", str(-best_ask_amount) + "x", best_ask)
-                orders.append(Order(product, best_ask, -best_ask_amount))
+                print("BUY", str(best_ask_amount) + "x", best_ask)
+                orders.append(Order(product, best_ask, best_ask_amount))
 
         if len(order_depth.buy_orders) != 0:
             best_bid, best_bid_amount = list(order_depth.buy_orders.items())[0]
@@ -131,9 +141,10 @@ class Trader:
 
         if len(order_depth.sell_orders) != 0:
             best_ask, best_ask_amount = list(order_depth.sell_orders.items())[0]
+            best_ask_amount = abs(best_ask_amount)  # Convert to positive value
             if int(best_ask) < acceptable_price:
-                print("BUY", str(-best_ask_amount) + "x", best_ask)
-                orders.append(Order(product, best_ask, -best_ask_amount))
+                print("BUY", str(best_ask_amount) + "x", best_ask)
+                orders.append(Order(product, best_ask, best_ask_amount))
 
         if len(order_depth.buy_orders) != 0:
             best_bid, best_bid_amount = list(order_depth.buy_orders.items())[0]
