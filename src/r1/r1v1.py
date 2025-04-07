@@ -40,30 +40,39 @@ class Trader:
 
         if Item.RAINFOREST_RESIN in state.order_depths:
             rainforest_resin_position = state.position[Item.RAINFOREST_RESIN] if Item.RAINFOREST_RESIN in state.position else 0
+            rainforest_resin_acceptable_price = 10000     # Rainforest resin is said to be stable in price
             rainforest_resin_orders = self.rainforest_resin_orders(
-                state.order_depths[Item.RAINFOREST_RESIN],
-                state.position[Item.RAINFOREST_RESIN],
-                rainforest_resin_position
+                order_depth=state.order_depths[Item.RAINFOREST_RESIN],
+                position=state.position[Item.RAINFOREST_RESIN],
+                position_limit=rainforest_resin_position,
+                acceptable_price=rainforest_resin_acceptable_price
             )
             
             result[Item.RAINFOREST_RESIN] = rainforest_resin_orders
 
         if Item.KELP in state.order_depths:
             kelp_position = state.position[Item.KELP] if Item.KELP in state.position else 0
+            kelp_acceptable_price = self.calc_kelp_ap(
+                order_depth=state.order_depths[Item.KELP], 
+                trader_data=trader_data
+            )
             kelp_orders = self.kelp_orders(
-                state.order_depths[Item.KELP],
-                state.position[Item.KELP],
-                kelp_position
+                order_depth=state.order_depths[Item.KELP],
+                position=state.position[Item.KELP],
+                position_limit=kelp_position,
+                acceptable_price=kelp_acceptable_price
             )
 
             result[Item.KELP] = kelp_orders
 
         if Item.SQUID_INK in state.order_depths:
             squid_ink_position = state.position[Item.SQUID_INK] if Item.SQUID_INK in state.position else 0
+            squid_ink_acceptable_price = 10     # TODO: Calculate acceptable price for squid ink
             squid_ink_orders = self.squid_ink_orders(
-                state.order_depths[Item.SQUID_INK],
-                state.position[Item.SQUID_INK],
-                squid_ink_position
+                order_depth=state.order_depths[Item.SQUID_INK],
+                position=state.position[Item.SQUID_INK],
+                position_limit=squid_ink_position,
+                acceptable_price=squid_ink_acceptable_price
             )
 
             result[Item.SQUID_INK] = squid_ink_orders
@@ -79,13 +88,10 @@ class Trader:
 
         return result, conversions, traderData
     
-    def rainforest_resin_orders(self, order_depth: OrderDepth, position: int, position_limit: int):
+    def rainforest_resin_orders(self, order_depth: OrderDepth, position: int, position_limit: int, acceptable_price: int):
         orders: List[Order] = []
         product: Item = Item.RAINFOREST_RESIN
 
-        # TODO: Calculate acceptable price for RAINFOREST_RESIN
-        acceptable_price = 10  # Participant should calculate this value
-
         print("Acceptable price : " + str(acceptable_price))
         print("Buy Order depth : " + str(len(order_depth.buy_orders)) + ", Sell order depth : " + str(len(order_depth.sell_orders)))
 
@@ -104,13 +110,10 @@ class Trader:
         
         return orders
     
-    def kelp_orders(self, order_depth: OrderDepth, position: int, position_limit: int):
+    def kelp_orders(self, order_depth: OrderDepth, position: int, position_limit: int, acceptable_price: int):
         orders: List[Order] = []
         product: Item = Item.KELP
 
-        # TODO: Calculate acceptable price for KELP
-        acceptable_price = 10  # Participant should calculate this value
-
         print("Acceptable price : " + str(acceptable_price))
         print("Buy Order depth : " + str(len(order_depth.buy_orders)) + ", Sell order depth : " + str(len(order_depth.sell_orders)))
 
@@ -129,12 +132,13 @@ class Trader:
         
         return orders
     
-    def squid_ink_orders(self, order_depth: OrderDepth, position: int, position_limit: int):
+    def calc_kelp_ap(self, order_depth: OrderDepth, trader_data):
+        # TODO: Calculate acceptable price for kelp
+        return 0
+    
+    def squid_ink_orders(self, order_depth: OrderDepth, position: int, position_limit: int, acceptable_price: int):
         orders: List[Order] = []
         product: Item = Item.SQUID_INK
-
-        # TODO: Calculate acceptable price for SQUID_INK
-        acceptable_price = 10  # Participant should calculate this value
 
         print("Acceptable price : " + str(acceptable_price))
         print("Buy Order depth : " + str(len(order_depth.buy_orders)) + ", Sell order depth : " + str(len(order_depth.sell_orders)))
