@@ -14,6 +14,11 @@ class Item:
 class Trader:
 
     def __init__(self):
+        self.VALUE = {
+            'RAINFOREST_RESIN': 10000,
+            'KELP': 2000,
+            'SQUID_INK': 2000
+        }
         self.LIMIT = {
             'RAINFOREST_RESIN': 50,
             'KELP': 50,
