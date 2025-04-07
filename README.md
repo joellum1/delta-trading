@@ -59,6 +59,6 @@ deactivate
 
 ## 🛠️ Project Details
 
-After running the simulation and receiving the logs, use the [visualisation tool](https://jmerle.github.io/imc-prosperity-3-visualizer/) to generate graphical report of the algorithm's performance.
+After running the simulation and receiving the logs, use the [visualisation tool](https://jmerle.github.io/imc-prosperity-3-visualizer/) (source code found in https://github.com/jmerle/imc-prosperity-3-visualizer) to generate graphical report of the algorithm's performance.
 
 TBC...
