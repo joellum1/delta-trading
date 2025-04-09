@@ -125,12 +125,12 @@ class Trader:
 
         if Item.RAINFOREST_RESIN in state.order_depths:
             rainforest_resin_position = state.position[Item.RAINFOREST_RESIN] if Item.RAINFOREST_RESIN in state.position else 0
-            rainforest_resin_acceptable_price = 10000     # Rainforest resin is said to be stable in price
+            # rainforest_resin_acceptable_price = 10000     # Rainforest resin is said to be stable in price
             rainforest_resin_orders = self.rainforest_resin_orders(
                 order_depth=state.order_depths[Item.RAINFOREST_RESIN],
                 position=rainforest_resin_position,
                 position_limit=self.LIMIT[Item.RAINFOREST_RESIN],
-                acceptable_price=rainforest_resin_acceptable_price
+                acceptable_price=self.VALUE[Item.RAINFOREST_RESIN]
             )
             
             result[Item.RAINFOREST_RESIN] = rainforest_resin_orders
@@ -160,8 +160,8 @@ class Trader:
 
             result[Item.SQUID_INK] = self.squid_ink_orders(
                 order_depth=state.order_depths[Item.SQUID_INK],
-                position=state.position[Item.SQUID_INK],
-                position_limit=squid_ink_position,
+                position=squid_ink_position,
+                position_limit=self.LIMIT[Item.SQUID_INK],
                 acceptable_price=self.VALUE[Item.SQUID_INK]
             )
     
