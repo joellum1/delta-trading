@@ -167,6 +167,10 @@ class Trader:
         # Store trader data with new information
         trader_data[state.timestamp][Item.KELP] = (list(state.order_depth[Item.KELP].buy_orders.items())[0][0], list(state.order_depth[Item.KELP].sell_orders.items())[0][0])
         trader_data[state.timestamp][Item.SQUID_INK] = (list(state.order_depth[Item.SQUID_INK].buy_orders.items())[0][0], list(state.order_depth[Item.SQUID_INK].sell_orders.items())[0][0])
+
+        if len(trader_data) > 5000:
+            del trader_data[next(iter(trader_data))]
+            
         traderData = jsonpickle.encode(trader_data)
         
 		# Sample conversion request. Check more details below. 
