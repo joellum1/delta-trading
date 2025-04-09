@@ -6,7 +6,7 @@ import jsonpickle
 import heapq
 
 # Create logs for visualisation
-logger = Logger()
+# logger = Logger()
 
 class Item:
     RAINFOREST_RESIN = 'RAINFOREST_RESIN'
@@ -170,7 +170,7 @@ class Trader:
 
         if len(trader_data) > 5000:
             del trader_data[next(iter(trader_data))]
-            
+
         traderData = jsonpickle.encode(trader_data)
         
 		# Sample conversion request. Check more details below. 
