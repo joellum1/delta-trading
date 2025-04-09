@@ -3,6 +3,7 @@ from typing import List
 import string
 from logger import Logger
 import jsonpickle
+import heapq
 
 # Create logs for visualisation
 logger = Logger()
@@ -25,6 +26,61 @@ class Trader:
             'KELP': 50,
             'SQUID_INK': 50
         }
+
+    # want to be at position 0!
+    def clear_orders(
+        self,
+        product: str,
+        order_depth,
+        buy_volume,
+        sell_volume,
+        min_bid,
+        max_ask
+    ) -> (List[Order], int, int):
+        curr_position = position + buy_volume - sell_volume
+
+        buy_quantity = self.LIMIT[product] - (position + buy_volume)
+        sell_quantity = self.LIMIT[product] - (position + sell_volume)
+
+        orders = []
+        
+        # if there is more to sell, create buy orders
+        if curr_position > 0:
+            to_sell = []
+            for price, volume in order_depth.buy_orders.items():
+                if price >= min_bid:
+                    heapq.heappush(to_sell, (-price, volume))
+            while (sell_quantity > 0 and to_sell):
+                price, volume = heapq.heappop(to_sell)
+                price = -price
+                # can sell volume amount
+                if (sell_quantity >= volume):
+                    orders.append(Order(product, price, -volume))
+                    sell_quantity -= volume
+                    sell_volume += volume
+                else:
+                    orders.append(Order(product, price, -sell_quantity))
+                    sell_volume += sell_quantity
+                    break
+
+        if curr_position < 0:
+            to_buy = []
+            for price, volume in order_depth.sell_orders.items():
+                if price <= max_ask:
+                    heapq.heappush(to_buy, (price, volume))
+            while (buy_quantity > 0 and to_buy):
+                price, volume = heapq.heappop(to_buy)
+                if (buy_quantity >= volume):
+                    orders.append(Order(product, price, volume))
+                    buy_quantity -= volume
+                    buy_volume += volume
+                else:
+                    orders.append(Order(product, price, buy_quantity))
+                    buy_volume += buy_quantity
+                    break
+
+
+        return orders, buy_volume, sell_volume
     
     def run(self, state: TradingState):
         # Get data from previous iteration
