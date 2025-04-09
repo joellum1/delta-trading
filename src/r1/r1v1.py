@@ -82,7 +82,7 @@ class Trader:
 
         return orders, buy_volume, sell_volume
     
-    def fill_market_orders(self, product: str, orders: List[Order], order_depth: OrderDepth, position: int, acceptable_price: int):
+    def fill_market_orders(self, product: str, orders: List[Order], order_depth: OrderDepth, position: int, position_limit: int, acceptable_price: int):
         position_limit = self.LIMIT[product]
         add_buy_vol = 0
         add_sell_vol = 0
@@ -209,6 +209,7 @@ class Trader:
 
         fill_orders, buy_vol, sell_vol = self.fill_market_orders(
             product=product,
+            order_depth=order_depth,
             orders=orders,
             position=position,
             position_limit=position_limit,
