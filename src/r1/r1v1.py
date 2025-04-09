@@ -1,4 +1,4 @@
-from src.tutorial.datamodel import OrderDepth, UserId, TradingState, Order
+from datamodel import OrderDepth, UserId, TradingState, Order
 from typing import List
 import string
 from logger import Logger
