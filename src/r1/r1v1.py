@@ -205,7 +205,6 @@ class Trader:
         return orders
     
     def kelp_orders(self, order_depth: OrderDepth, position: int, position_limit: int, acceptable_price: int):
-        orders: List[Order] = []
         product: Item = Item.KELP
 
         fill_orders, buy_vol, sell_vol = self.fill_market_orders(
@@ -219,6 +218,7 @@ class Trader:
         clear_orders, buy_vol, sell_vol = self.clear_orders(
             product=product,
             order_depth=order_depth,
+            position=position,
             buy_volume=buy_vol,
             sell_volume=sell_vol,
             min_bid=acceptable_price,
@@ -228,7 +228,6 @@ class Trader:
         return fill_orders + clear_orders
     
     def squid_ink_orders(self, order_depth: OrderDepth, position: int, position_limit: int, acceptable_price: int):
-        orders: List[Order] = []
         product: Item = Item.SQUID_INK
 
         print("Acceptable price : " + str(acceptable_price))
@@ -245,6 +244,7 @@ class Trader:
         clear_orders, buy_vol, sell_vol = self.clear_orders(
             product=product,
             order_depth=order_depth,
+            position=position,
             buy_volume=buy_vol,
             sell_volume=sell_vol,
             min_bid=acceptable_price,
