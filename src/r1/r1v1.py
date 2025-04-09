@@ -108,7 +108,7 @@ class Trader:
                     orders.append(Order(product, best_bid, -bid_qty))
                     add_sell_vol += bid_qty
                     
-        return add_buy_vol, add_sell_vol
+        return orders, add_buy_vol, add_sell_vol
     
     def run(self, state: TradingState):
         # Get data from previous iteration
