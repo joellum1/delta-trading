@@ -3,6 +3,7 @@ from typing import List
 import string
 from logger import Logger
 import jsonpickle
+import heapq
 
 # Create logs for visualisation
 logger = Logger()
@@ -26,6 +27,61 @@ class Trader:
             'SQUID_INK': 50
         }
 
+    # want to be at position 0!
+    def clear_orders(
+        self,
+        product: str,
+        order_depth: OrderDepth,
+        position: int,
+        buy_volume: int,
+        sell_volume: int,
+        min_bid: int,   # Minimum price we would take to sell to someone
+        max_ask: int    # Maximum price we would pay to buy from someone
+    ) -> (List[Order], int, int):
+        curr_position = position + buy_volume - sell_volume
+
+        buy_quantity = self.LIMIT[product] - (position + buy_volume)
+        sell_quantity = self.LIMIT[product] - (position + sell_volume)
+
+        orders = []
+        
+        # if there is more to sell, create buy orders
+        if curr_position > 0:
+            to_sell = []
+            for price, volume in order_depth.buy_orders.items():
+                if price >= min_bid:
+                    heapq.heappush(to_sell, (-price, volume))
+            while (sell_quantity > 0 and to_sell):
+                price, volume = heapq.heappop(to_sell)
+                price = -price
+                # can sell volume amount
+                if (sell_quantity >= volume):
+                    orders.append(Order(product, price, -volume))
+                    sell_quantity -= volume
+                    sell_volume += volume
+                else:
+                    orders.append(Order(product, price, -sell_quantity))
+                    sell_volume += sell_quantity
+                    break
+
+        if curr_position < 0:
+            to_buy = []
+            for price, volume in order_depth.sell_orders.items():
+                if price <= max_ask:
+                    heapq.heappush(to_buy, (price, volume))
+            while (buy_quantity > 0 and to_buy):
+                price, volume = heapq.heappop(to_buy)
+                if (buy_quantity >= volume):
+                    orders.append(Order(product, price, volume))
+                    buy_quantity -= volume
+                    buy_volume += volume
+                else:
+                    orders.append(Order(product, price, buy_quantity))
+                    buy_volume += buy_quantity
+                    break
+
+        return orders, buy_volume, sell_volume
+    
     def fill_market_orders(self, product: str, orders: List[Order], order_depth: OrderDepth, position: int, acceptable_price: int):
         position_limit = self.LIMIT[product]
         add_buy_vol = 0
@@ -154,8 +210,17 @@ class Trader:
             position_limit=position_limit,
             acceptable_price=acceptable_price
         )
+
+        clear_orders, buy_vol, sell_vol = self.clear_orders(
+            product=product,
+            order_depth=order_depth,
+            buy_volume=buy_vol,
+            sell_volume=sell_vol,
+            min_bid=acceptable_price,
+            max_ask=acceptable_price
+        )
         
-        return fill_orders
+        return fill_orders + clear_orders
     
     def squid_ink_orders(self, order_depth: OrderDepth, position: int, position_limit: int, acceptable_price: int):
         orders: List[Order] = []
@@ -171,5 +236,14 @@ class Trader:
             position_limit=position_limit,
             acceptable_price=acceptable_price
         )
+
+        clear_orders, buy_vol, sell_vol = self.clear_orders(
+            product=product,
+            order_depth=order_depth,
+            buy_volume=buy_vol,
+            sell_volume=sell_vol,
+            min_bid=acceptable_price,
+            max_ask=acceptable_price
+        )
         
-        return fill_orders
+        return fill_orders + clear_orders
