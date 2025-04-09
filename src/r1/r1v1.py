@@ -86,14 +86,12 @@ class Trader:
                 prev_bid, prev_ask = prev_bid_ask
                 self.VALUE[Item.KELP] = (prev_bid + prev_ask) / 2
 
-            kelp_orders = self.kelp_orders(
+            result[Item.KELP] = self.kelp_orders(
                 order_depth=state.order_depths[Item.KELP],
                 position=state.position[Item.KELP],
                 position_limit=kelp_position,
                 acceptable_price=self.VALUE[Item.KELP]
             )
-
-            result[Item.KELP] = kelp_orders
 
         if Item.SQUID_INK in state.order_depths:
             squid_ink_position = state.position[Item.SQUID_INK] if Item.SQUID_INK in state.position else 0
@@ -103,14 +101,12 @@ class Trader:
                 prev_bid, prev_ask = prev_bid_ask
                 self.VALUE[Item.SQUID_INK] = (prev_bid + prev_ask) / 2
 
-            squid_ink_orders = self.squid_ink_orders(
+            result[Item.SQUID_INK] = self.squid_ink_orders(
                 order_depth=state.order_depths[Item.SQUID_INK],
                 position=state.position[Item.SQUID_INK],
                 position_limit=squid_ink_position,
                 acceptable_price=self.VALUE[Item.SQUID_INK]
             )
-
-            result[Item.SQUID_INK] = squid_ink_orders
     
         # Store trader data with new information
         trader_data[state.timestamp][Item.KELP] = (list(state.order_depth[Item.KELP].buy_orders.items())[0][0], list(state.order_depth[Item.KELP].sell_orders.items())[0][0])
@@ -151,7 +147,7 @@ class Trader:
         orders: List[Order] = []
         product: Item = Item.KELP
 
-        buy_vol, sell_vol = self.fill_market_orders(
+        fill_orders, buy_vol, sell_vol = self.fill_market_orders(
             product=product,
             orders=orders,
             position=position,
@@ -159,7 +155,7 @@ class Trader:
             acceptable_price=acceptable_price
         )
         
-        return orders
+        return fill_orders
     
     def squid_ink_orders(self, order_depth: OrderDepth, position: int, position_limit: int, acceptable_price: int):
         orders: List[Order] = []
@@ -168,17 +164,12 @@ class Trader:
         print("Acceptable price : " + str(acceptable_price))
         print("Buy Order depth : " + str(len(order_depth.buy_orders)) + ", Sell order depth : " + str(len(order_depth.sell_orders)))
 
-        if len(order_depth.sell_orders) != 0:
-            best_ask, best_ask_amount = list(order_depth.sell_orders.items())[0]
-            best_ask_amount = abs(best_ask_amount)  # Convert to positive value
-            if int(best_ask) < acceptable_price:
-                print("BUY", str(best_ask_amount) + "x", best_ask)
-                orders.append(Order(product, best_ask, best_ask_amount))
-
-        if len(order_depth.buy_orders) != 0:
-            best_bid, best_bid_amount = list(order_depth.buy_orders.items())[0]
-            if int(best_bid) > acceptable_price:
-                print("SELL", str(best_bid_amount) + "x", best_bid)
-                orders.append(Order(product, best_bid, -best_bid_amount))
+        fill_orders, buy_vol, sell_vol = self.fill_market_orders(
+            product=product,
+            orders=orders,
+            position=position,
+            position_limit=position_limit,
+            acceptable_price=acceptable_price
+        )
         
-        return orders
+        return fill_orders
