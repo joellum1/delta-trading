@@ -113,7 +113,7 @@ class Trader:
     def run(self, state: TradingState):
         # Get data from previous iteration
         trader_data = {}
-        if state.get(traderData) != None and state.traderData != "":
+        if state.traderData != None and state.traderData != "":
             trader_data = jsonpickle.decode(state.traderData)
 
         print("traderData: " + state.traderData)
@@ -177,7 +177,7 @@ class Trader:
         conversions = 1
 
         # Log data for visualisation efforts
-        logger.flush(state, result, conversions, traderData)
+        # logger.flush(state, result, conversions, traderData)
 
         return result, conversions, traderData
     
