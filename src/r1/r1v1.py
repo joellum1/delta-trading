@@ -209,8 +209,8 @@ class Trader:
 
         fill_orders, buy_vol, sell_vol = self.fill_market_orders(
             product=product,
-            order_depth=order_depth,
             orders=orders,
+            order_depth=order_depth,
             position=position,
             position_limit=position_limit,
             acceptable_price=acceptable_price
@@ -237,6 +237,7 @@ class Trader:
         fill_orders, buy_vol, sell_vol = self.fill_market_orders(
             product=product,
             orders=orders,
+            order_depth=order_depth,
             position=position,
             position_limit=position_limit,
             acceptable_price=acceptable_price
