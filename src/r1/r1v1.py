@@ -167,9 +167,11 @@ class Trader:
     
         # Store trader data with new information
         if state.order_depths[Item.KELP] is not None:
+            trader_data[state.timestamp] = {}
             trader_data[state.timestamp][Item.KELP] = (list(state.order_depths[Item.KELP].buy_orders.items())[0][0], list(state.order_depths[Item.KELP].sell_orders.items())[0][0])
         
         if state.order_depths[Item.SQUID_INK] is not None:
+            trader_data[state.timestamp] = {}
             trader_data[state.timestamp][Item.SQUID_INK] = (list(state.order_depths[Item.SQUID_INK].buy_orders.items())[0][0], list(state.order_depths[Item.SQUID_INK].sell_orders.items())[0][0])
 
         if len(trader_data) > 5000:
