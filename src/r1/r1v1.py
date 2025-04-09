@@ -127,8 +127,8 @@ class Trader:
             rainforest_resin_acceptable_price = 10000     # Rainforest resin is said to be stable in price
             rainforest_resin_orders = self.rainforest_resin_orders(
                 order_depth=state.order_depths[Item.RAINFOREST_RESIN],
-                position=state.position[Item.RAINFOREST_RESIN],
-                position_limit=rainforest_resin_position,
+                position=rainforest_resin_position,
+                position_limit=self.LIMIT[Item.RAINFOREST_RESIN],
                 acceptable_price=rainforest_resin_acceptable_price
             )
             
@@ -144,8 +144,8 @@ class Trader:
 
             result[Item.KELP] = self.kelp_orders(
                 order_depth=state.order_depths[Item.KELP],
-                position=state.position[Item.KELP],
-                position_limit=kelp_position,
+                position=kelp_position,
+                position_limit=self.LIMIT[Item.KELP],
                 acceptable_price=self.VALUE[Item.KELP]
             )
 
