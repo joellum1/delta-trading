@@ -61,4 +61,11 @@ deactivate
 
 After running the simulation and receiving the logs, use the [visualisation tool](https://jmerle.github.io/imc-prosperity-3-visualizer/) (source code found in https://github.com/jmerle/imc-prosperity-3-visualizer) to generate graphical report of the algorithm's performance.
 
-TBC...
+### Round 1
+
+When we first ventured into algorithmic trading, we had little experience with the field. But rather than giving up, we believed that starting simple was the best way to learn. Our initial strategy was based on using the mid-price of the previous bid-ask spread as the acceptable price for buying and selling commodities. This gave us a starting point to build on and helped us understand market behavior in a manageable way.
+
+### Round 2
+
+In progress...
+
