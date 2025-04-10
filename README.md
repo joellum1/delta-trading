@@ -63,9 +63,27 @@ After running the simulation and receiving the logs, use the [visualisation tool
 
 ### Round 1
 
-When we first ventured into algorithmic trading, we had little experience with the field. But rather than giving up, we believed that starting simple was the best way to learn. Our initial strategy was based on using the mid-price of the previous bid-ask spread as the acceptable price for buying and selling commodities. This gave us a starting point to build on and helped us understand market behavior in a manageable way.
+In Round 1, we were introduced to three commodities available for trading:
+
+- 🌿 **Rainforest Resin** — A relatively **stable** commodity.
+- 🦑 **Squid Ink** — Known to be **unpredictable** and **volatile**.
+- 🪸 **Kelp** — Also **volatile**, with less consistent market behavior.
+
+The varying stability of these assets introduced an interesting challenge. Rainforest resin offered predictable behavior, while squid ink and kelp required more caution and adaptability.
+
+With no prior experience in algorithmic trading, we focused on simplicity over sophistication. We chose to calculate the acceptable price for placing buy and sell orders as the **mid-price of the previous bid-ask spread**. This gave us a neutral baseline to start trading without overcommitting to unverified assumptions or complex predictions.
 
 ### Round 2
 
-In progress...
+In Round 2, the set of tradable goods changed significantly, introducing a mix of individual items and bundled products:
+
+- 🥐 **Croissant**  
+- 🍓 **Jam**  
+- 🪘 **Djembe**  
+- 🧺 **Picnic Basket 1** — Contains **6 croissants**, **3 jams**, and **1 djembe**  
+- 🧺 **Picnic Basket 2** — Contains **4 croissants** and **2 jams**
+
+This round introduced the concept of **composite goods**, where the value of the baskets was inherently tied to the value of their individual components. It challenged us to think beyond isolated asset pricing and explore relationships between bundled and base commodities.
+
+We are currently exploring **strategic arbitrage between the baskets and their components** as a key opportunity — though this also adds a layer of complexity in managing **value equivalency**, **price fluctuations**, and **potential trade-offs**.
 
