@@ -3,3 +3,4 @@ numpy
 jsonpickle
 matplotlib
 plotly
+nbstripout
