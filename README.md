@@ -29,6 +29,12 @@ Run the following script to set up your virual environment.
 python setup_env.py
 ```
 
+Run the following to ensure Jupyter Notebook cell outputs are ignored.
+
+```
+nbstripout --install --attributes .gitattributes
+```
+
 Make sure to **activate the environment before running your bot** so that it uses only the allowed dependencies.
 
 ### On **Mac/Linux**:
