@@ -158,11 +158,14 @@ class Trader:
         short_window = 50
         long_window = 200
 
-        product_df = self.df[self.df['product'] == product].copy()
+        product_df = self.df[self.df['product'] == product].copy()        
         product_df = product_df.sort_values(by='timestamp')
 
         product_df['short_ma'] = product_df['mid_price'].rolling(window=short_window, min_periods=1).mean()
         product_df['long_ma'] = product_df['mid_price'].rolling(window=long_window, min_periods=1).mean()
+
+        if 'short_ma' not in product_df or 'long_ma' not in product_df or product_df['short_ma'].empty or product_df['long_ma'].empty:
+            return 0, 0
 
         latest_short_ma = product_df['short_ma'].iloc[-1]
         latest_long_ma = product_df['long_ma'].iloc[-1]
@@ -181,6 +184,9 @@ class Trader:
         }
         
         self.df = pd.concat([self.df, pd.DataFrame([new_row])], ignore_index=True)
+
+        if len(self.df) > 1000:
+            self.df = self.df.iloc[-1000:].reset_index(drop=True)
 
     # calculate how much of an item we should buy
     def position_size(self, entry_price):
