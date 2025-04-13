@@ -163,7 +163,11 @@ class Trader:
 
         product_df['short_ma'] = product_df['mid_price'].rolling(window=short_window, min_periods=1).mean()
         product_df['long_ma'] = product_df['mid_price'].rolling(window=long_window, min_periods=1).mean()
-        return product['short_ma'], product_df['long_ma']
+
+        latest_short_ma = product_df['short_ma'].iloc[-1]
+        latest_long_ma = product_df['long_ma'].iloc[-1]
+
+        return latest_short_ma, latest_long_ma
 
     # update the data frame so that average values can be calculated
     def update_df(self, product: str, timestamp, bid_price, ask_price):
@@ -176,7 +180,7 @@ class Trader:
             'ask price': ask_price
         }
         
-        self.df = self.df.concat([self.df, pd.DataFrame([new_row])], ignore_index=True)
+        self.df = pd.concat([self.df, pd.DataFrame([new_row])], ignore_index=True)
 
     # calculate how much of an item we should buy
     def position_size(self, entry_price):
