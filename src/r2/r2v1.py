@@ -151,12 +151,14 @@ class Trader:
         self.portfolio_size = 44340
         self.risk_percent = 0.01
         self.stop_loss_percent = 0.02
-        self.df = pd.read_csv('round-2-island-data-bottle/prices_round_2_day_-1.csv', sep=";")
+        self.df = pd.DataFrame(columns=['timestamp', 'product', 'bid_price', 'mid_price', 'ask_price'])
+        # self.df = pd.read_csv('round-2-island-data-bottle/prices_round_2_day_-1.csv', sep=";")
 
     def moving_average(self, product: str):
         short_window = 50
         long_window = 200
 
+        # TODO: self.df has been removed so this function will not work until changed
         product_df = self.df[self.df['product'] == product].copy()
         product_df = product_df.sort_values(by='timestamp')
 
@@ -174,7 +176,8 @@ class Trader:
             'mid price': mid_price,
             'ask price': ask_price
         }
-        self.df.concat([self.df, pd.DataFrame([new_row])], ignore_index=True)
+        
+        self.df = self.df.concat([self.df, pd.DataFrame([new_row])], ignore_index=True)
 
     # calculate how much of an item we should buy
     def position_size(self, entry_price):
@@ -196,7 +199,7 @@ class Trader:
         best_ask, best_ask_amount = list(order_depth.sell_orders.items())[0]
         best_bid, best_bid_amount = list(order_depth.buy_orders.items())[0]
         mid_price = (best_ask + best_bid) / 2
-        self.update_df(self, product, timestamp, best_bid, best_ask)
+        self.update_df(product, timestamp, best_bid, best_ask)
         # buy
         if (short_ma > long_ma):
             buy_position = min(self.position_size(self, best_ask), position_limit - position)
@@ -241,6 +244,10 @@ class Trader:
         trader_data = {}
         if state.traderData != None and state.traderData != "": trader_data = jsonpickle.decode(state.traderData)
 
+        # If no existing dataframe, create a new one to store historical data
+        if 'df' in trader_data:
+            self.df = trader_data['df']
+
 		# Orders to be placed on exchange matching engine
         result = {}
 
@@ -248,6 +255,7 @@ class Trader:
             resin_position = state.position[Item.RAINFOREST_RESIN] if Item.RAINFOREST_RESIN in state.position else 0
             
             result[Item.RAINFOREST_RESIN] = self.make_orders(
+                product=Item.RAINFOREST_RESIN,
                 order_depth=state.order_depths[Item.RAINFOREST_RESIN],
                 position=resin_position,
                 position_limit=self.LIMIT[Item.RAINFOREST_RESIN],
@@ -258,6 +266,7 @@ class Trader:
             kelp_position = state.position[Item.KELP] if Item.KELP in state.position else 0
             
             result[Item.KELP] = self.make_orders(
+                product=Item.KELP,
                 order_depth=state.order_depths[Item.KELP],
                 position=kelp_position,
                 position_limit=self.LIMIT[Item.KELP],
@@ -268,6 +277,7 @@ class Trader:
             ink_position = state.position[Item.SQUID_INK] if Item.SQUID_INK in state.position else 0
             
             result[Item.SQUID_INK] = self.make_orders(
+                product=Item.SQUID_INK,
                 order_depth=state.order_depths[Item.SQUID_INK],
                 position=ink_position,
                 position_limit=self.LIMIT[Item.SQUID_INK],
@@ -298,6 +308,7 @@ class Trader:
             jam_position = state.position[Item.JAM] if Item.JAM in state.position else 0
             
             result[Item.JAM] = self.make_orders(
+                product=Item.JAM,
                 order_depth=state.order_depths[Item.JAM],
                 position=jam_position,
                 position_limit=self.LIMIT[Item.JAM],
@@ -308,6 +319,7 @@ class Trader:
             djembe_position = state.position[Item.DJEMBE] if Item.DJEMBE in state.position else 0
             
             result[Item.DJEMBE] = self.make_orders(
+                product=Item.DJEMBE,
                 order_depth=state.order_depths[Item.DJEMBE],
                 position=djembe_position,
                 position_limit=self.LIMIT[Item.DJEMBE],
@@ -318,6 +330,7 @@ class Trader:
             basket1_position = state.position[Item.PICNIC_BASKET1] if Item.PICNIC_BASKET1 in state.position else 0
             
             result[Item.PICNIC_BASKET1] = self.make_orders(
+                product=Item.PICNIC_BASKET1,
                 order_depth=state.order_depths[Item.PICNIC_BASKET1],
                 position=basket1_position,
                 position_limit=self.LIMIT[Item.PICNIC_BASKET1],
@@ -328,6 +341,7 @@ class Trader:
             basket2_position = state.position[Item.PICNIC_BASKET2] if Item.PICNIC_BASKET2 in state.position else 0
             
             result[Item.PICNIC_BASKET2] = self.make_orders(
+                product=Item.PICNIC_BASKET2,
                 order_depth=state.order_depths[Item.PICNIC_BASKET2],
                 position=basket2_position,
                 position_limit=self.LIMIT[Item.PICNIC_BASKET2],
@@ -335,6 +349,7 @@ class Trader:
             )
 
         # Store trader data with new information
+        trader_data['df'] = self.df
         traderData = jsonpickle.encode(trader_data)
         
 		# Sample conversion request. Check more details below. 
