@@ -158,7 +158,6 @@ class Trader:
         short_window = 50
         long_window = 200
 
-        # TODO: self.df has been removed so this function will not work until changed
         product_df = self.df[self.df['product'] == product].copy()
         product_df = product_df.sort_values(by='timestamp')
 
@@ -190,7 +189,7 @@ class Trader:
         return risk_per_trade / risk_per_share
     
     def make_orders(self, product: str, order_depth: OrderDepth, position: int, position_limit: int, timestamp):
-        short_ma, long_ma = self.moving_average(self, product)
+        short_ma, long_ma = self.moving_average(product)
 
         add_buy_vol = 0
         add_sell_vol = 0
