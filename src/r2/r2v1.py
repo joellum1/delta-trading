@@ -4,6 +4,7 @@ import string
 import jsonpickle
 import heapq
 import json
+import pandas as pd
 
 class Logger:
     def __init__(self) -> None:
@@ -122,6 +123,9 @@ class Logger:
 logger = Logger()
 
 class Item:
+    RAINFOREST_RESIN = 'RAINFOREST_RESIN'
+    KELP = 'KELP'
+    SQUID_INK = 'SQUID_INK'
     CROISSANT = 'CROISSANT'
     JAM = 'JAM'
     DJEMBE = 'DJEMBE'
@@ -132,16 +136,84 @@ class Trader:
     def __init__(self):
         self.VALUE = {}
         self.LIMIT = {
+            'RAINFOREST_RESIN': 50,
+            'KELP': 50,
+            'SQUID_INK': 50,
             'CROISSANT': 250,
             'JAM': 350,
             'DJEMBE': 60,
             'PICNIC_BASKET1': 60,
             'PICNIC_BASKET2': 100
         }
+        # update based on trades!
+        # portfolio value = cash + value of stocks but fixed for simplicity
+        # no change when buying, if sell for profit, then increase but if sell for loss decrease
+        self.portfolio_size = 44340
+        self.risk_percent = 0.01
+        self.stop_loss_percent = 0.02
+        self.df = pd.read_csv('round-2-island-data-bottle/prices_round_2_day_-1.csv', sep=";")
+
+    def moving_average(self, product: str):
+        short_window = 50
+        long_window = 200
+
+        product_df = self.df[self.df['product'] == product].copy()
+        product_df = product_df.sort_values(by='timestamp')
+
+        product_df['short_ma'] = product_df['mid_price'].rolling(window=short_window, min_periods=1).mean()
+        product_df['long_ma'] = product_df['mid_price'].rolling(window=long_window, min_periods=1).mean()
+        return product['short_ma'], product_df['long_ma']
+
+    # update the data frame so that average values can be calculated
+    def update_df(self, product: str, timestamp, bid_price, ask_price):
+        mid_price = (bid_price + ask_price) / 2
+        new_row = {
+            'timestamp': timestamp,
+            'product': product,
+            'bid price': bid_price,
+            'mid price': mid_price,
+            'ask price': ask_price
+        }
+        self.df.concat([self.df, pd.DataFrame([new_row])], ignore_index=True)
+
+    # calculate how much of an item we should buy
+    def position_size(self, entry_price):
+        stop_loss_price = entry_price * (1 - self.stop_loss_percent)
+        risk_per_trade = self.portfolio_size * self.risk_percent
+        risk_per_share = entry_price - stop_loss_price
+        
+        if risk_per_share == 0:
+            return 0
+        return risk_per_trade / risk_per_share
+    
+    def make_orders(self, product: str, order_depth: OrderDepth, position: int, position_limit: int, timestamp):
+        short_ma, long_ma = self.moving_average(self, product)
+
+        add_buy_vol = 0
+        add_sell_vol = 0
+
+        orders: List[Order] = []
+        best_ask, best_ask_amount = list(order_depth.sell_orders.items())[0]
+        best_bid, best_bid_amount = list(order_depth.buy_orders.items())[0]
+        mid_price = (best_ask + best_bid) / 2
+        self.update_df(self, product, timestamp, best_bid, best_ask)
+        # buy
+        if (short_ma > long_ma):
+            buy_position = min(self.position_size(self, best_ask), position_limit - position)
+            orders.append(Order(product, mid_price, buy_position))
+            add_buy_vol += buy_position
+
+        # sell
+        if (short_ma < long_ma):
+            sell_position = min(self.position_size(self, best_bid), position_limit - position)
+            orders.append(Order(product, mid_price, -sell_position))
+            add_sell_vol += sell_position
+        
+        return orders
 
     def croissant_orders(self, order_depth: OrderDepth, position: int, position_limit: int, acceptable_price: int):
         orders: List[Order] = []
-        product: Item = Item.RAINFOREST_RESIN
+        product: Item = Item.CROISSANT
 
         print("CROISSANT")
         print("Acceptable price : " + str(acceptable_price))
@@ -172,19 +244,96 @@ class Trader:
 		# Orders to be placed on exchange matching engine
         result = {}
 
+        if Item.RAINFOREST_RESIN in state.order_depths:
+            resin_position = state.position[Item.RAINFOREST_RESIN] if Item.RAINFOREST_RESIN in state.position else 0
+            
+            result[Item.RAINFOREST_RESIN] = self.make_orders(
+                order_depth=state.order_depths[Item.RAINFOREST_RESIN],
+                position=resin_position,
+                position_limit=self.LIMIT[Item.RAINFOREST_RESIN],
+                timestamp=state.timestamp
+            )
+
+        if Item.KELP in state.order_depths:
+            kelp_position = state.position[Item.KELP] if Item.KELP in state.position else 0
+            
+            result[Item.KELP] = self.make_orders(
+                order_depth=state.order_depths[Item.KELP],
+                position=kelp_position,
+                position_limit=self.LIMIT[Item.KELP],
+                timestamp=state.timestamp
+            )
+
+        if Item.SQUID_INK in state.order_depths:
+            ink_position = state.position[Item.SQUID_INK] if Item.SQUID_INK in state.position else 0
+            
+            result[Item.SQUID_INK] = self.make_orders(
+                order_depth=state.order_depths[Item.SQUID_INK],
+                position=ink_position,
+                position_limit=self.LIMIT[Item.SQUID_INK],
+                timestamp=state.timestamp
+            )
+
         if Item.CROISSANT in state.order_depths:
             croissant_position = state.position[Item.CROISSANT] if Item.CROISSANT in state.position else 0
 
             # Calculate acceptable price
-            croissant_ap = 1
+            # croissant_ap = 1
             
-            result[Item.CROISSANT] = self.croissant_orders(
+            # result[Item.CROISSANT] = self.croissant_orders(
+            #     order_depth=state.order_depths[Item.CROISSANT],
+            #     position=croissant_position,
+            #     position_limit=self.LIMIT[Item.CROISSANT],
+            #     acceptable_price=croissant_ap
+            # )
+            result[Item.CROISSANT] = self.make_orders(
+                product=Item.CROISSANT,
                 order_depth=state.order_depths[Item.CROISSANT],
                 position=croissant_position,
                 position_limit=self.LIMIT[Item.CROISSANT],
-                acceptable_price=croissant_ap
+                timestamp=state.timestamp
             )
-    
+
+        if Item.JAM in state.order_depths:
+            jam_position = state.position[Item.JAM] if Item.JAM in state.position else 0
+            
+            result[Item.JAM] = self.make_orders(
+                order_depth=state.order_depths[Item.JAM],
+                position=jam_position,
+                position_limit=self.LIMIT[Item.JAM],
+                timestamp=state.timestamp
+            )
+
+        if Item.DJEMBE in state.order_depths:
+            djembe_position = state.position[Item.DJEMBE] if Item.DJEMBE in state.position else 0
+            
+            result[Item.DJEMBE] = self.make_orders(
+                order_depth=state.order_depths[Item.DJEMBE],
+                position=djembe_position,
+                position_limit=self.LIMIT[Item.DJEMBE],
+                timestamp=state.timestamp
+            )
+
+        if Item.PICNIC_BASKET1 in state.order_depths:
+            basket1_position = state.position[Item.PICNIC_BASKET1] if Item.PICNIC_BASKET1 in state.position else 0
+            
+            result[Item.PICNIC_BASKET1] = self.make_orders(
+                order_depth=state.order_depths[Item.PICNIC_BASKET1],
+                position=basket1_position,
+                position_limit=self.LIMIT[Item.PICNIC_BASKET1],
+                timestamp=state.timestamp
+            )
+
+        if Item.PICNIC_BASKET2 in state.order_depths:
+            basket2_position = state.position[Item.PICNIC_BASKET2] if Item.PICNIC_BASKET2 in state.position else 0
+            
+            result[Item.PICNIC_BASKET2] = self.make_orders(
+                order_depth=state.order_depths[Item.PICNIC_BASKET2],
+                position=basket2_position,
+                position_limit=self.LIMIT[Item.PICNIC_BASKET2],
+                timestamp=state.timestamp
+            )
+
         # Store trader data with new information
         traderData = jsonpickle.encode(trader_data)
         
